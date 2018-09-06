@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="eve-astrographer" default="build" basedir=".">
+
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
+  <property name="dist" location="dist"/>
+  <property name="distfile" value="eve-astrographer"/>
+
+  <target name="build" description="build project and all subprojects">
+    <tstamp/>
+    <mkdir dir="${build}/classes"/>
+    <javac srcdir="${src}" destdir="${build}/classes">
+      <classpath>
+        <fileset dir="lib">
+          <include name="**/*.jar"/>
+        </fileset>
+      </classpath>
+    </javac>
+
+    <!-- Copy the configs, scripts, sqls, etc -->
+    <copy todir="${build}/lib">
+      <fileset dir="lib"/>
+    </copy>
+    <copy todir="${build}/cfg">
+      <fileset dir="cfg"/>
+    </copy>
+    <copy todir="${build}/bin">
+      <fileset dir="scripts"/>
+    </copy>
+    <copy todir="${build}/sql">
+      <fileset dir="sql"/>
+    </copy>
+
+  </target>
+
+  <target name="dist" depends="build" description="build distributable tar.gz">
+    <mkdir dir="${dist}"/>
+    <jar jarfile="${build}/lib/${distfile}.jar" basedir="${build}/classes"/>
+    <tar destfile="${dist}/${distfile}.tar">
+      <tarfileset dir="${build}">
+        <exclude name="classes/"/>
+      </tarfileset>
+    </tar>
+    <gzip destfile="${dist}/${distfile}.tar.gz" src="${dist}/${distfile}.tar"/>
+    <delete file="${dist}/${distfile}.tar"/>
+  </target>
+
+  <target name="clean" description="clean up project and sub-projects">
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+
+</project>
