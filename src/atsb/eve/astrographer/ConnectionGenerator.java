@@ -10,8 +10,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import atsb.eve.astrographer.SolarSystem.SecClass;
 import javafx.geometry.Point3D;
+import model.SolarSystem;
+import model.SolarSystem.SecClass;
 
 public class ConnectionGenerator {
 
