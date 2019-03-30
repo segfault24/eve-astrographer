@@ -5,12 +5,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
+import atsb.eve.astrographer.model.KDTree;
+import atsb.eve.astrographer.model.SolarSystem;
+import atsb.eve.astrographer.model.SystemConnection;
 import javafx.geometry.Point3D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import model.SolarSystem;
-import model.SystemConnection;
 
 public class UniverseCanvas extends Canvas {
 
@@ -25,13 +26,17 @@ public class UniverseCanvas extends Canvas {
 
 	private HashMap<String, SolarSystem> systems;
 	private List<SystemConnection> connections;
+	private KDTree searchTree;
+	private Point3D universeCenter;
+	private double universeScale = 1;
+
 	private double zoom = 0;
 	private double drawScale = 350;
 	private int dotSize = 2;
 	private double dragStartX = 0;
 	private double dragStartY = 0;
-	private double centerX = 0;
-	private double centerY = 0;
+	private double panX = 0;
+	private double panY = 0;
 
 	private String labelS = "";
 	private double labelX = 0;
@@ -40,6 +45,7 @@ public class UniverseCanvas extends Canvas {
 	public UniverseCanvas() {
 		systems = new HashMap<String, SolarSystem>();
 		connections = new ArrayList<SystemConnection>();
+		universeCenter = new Point3D(0, 0, 0);
 		widthProperty().addListener(evt -> redraw());
 		heightProperty().addListener(evt -> redraw());
 
@@ -56,22 +62,23 @@ public class UniverseCanvas extends Canvas {
 			dragStartY = e.getY();
 		});
 		setOnMouseDragged(e -> {
-			centerX -= (e.getX() - dragStartX) / drawScale;
-			centerX = Math.max(centerX, -1);
-			centerX = Math.min(centerX, 1);
-			centerY -= (e.getY() - dragStartY) / drawScale;
-			centerY = Math.max(centerY, -1);
-			centerY = Math.min(centerY, 1);
+			panX -= (e.getX() - dragStartX) / drawScale;
+			panX = Math.max(panX, -1);
+			panX = Math.min(panX, 1);
+			panY -= (e.getY() - dragStartY) / drawScale;
+			panY = Math.max(panY, -1);
+			panY = Math.min(panY, 1);
 			dragStartX = e.getX();
 			dragStartY = e.getY();
+			labelS = "";
 			redraw();
 		});
 		setOnMouseMoved(e -> {
-			SolarSystem s = dumbThing(e.getX(), e.getY());
+			SolarSystem s = searchNearest(e.getX(), e.getY(), 10);
 			if (s != null) {
 				labelS = s.getName();
-				labelX = toDrawX(s.getPosition().getX());
-				labelY = toDrawY(s.getPosition().getZ());
+				labelX = toDrawX(s.getPosition().getX()) + 4;
+				labelY = toDrawY(s.getPosition().getZ()) - 4;
 				redraw();
 			} else {
 				labelS = "";
@@ -81,17 +88,27 @@ public class UniverseCanvas extends Canvas {
 	}
 
 	// TODO: dear lord this is so brute forced
-	private SolarSystem dumbThing(double x, double y) {
+	// find the nearest system within r pixels of the given x,y onscreen
+	private SolarSystem searchNearest(double x, double y, double r) {
+		
+		/*SolarSystem s = searchTree.nearest(toMapX(x), toMapZ(y));
+		if (Math.pow(x - toDrawX(s.getPosition().getX()), 2) + Math.pow(y - toDrawY(s.getPosition().getZ()), 2) < r*r) {
+			return s;
+		} else {
+			return null;
+		}*/
+		
 		SolarSystem ret = null;
 		double d = Double.MAX_VALUE;
 		for (SolarSystem s : systems.values()) {
-			double asdf = Math.pow(x - toDrawX(s.getPosition().getX()), 2) + Math.pow(y - toDrawY(s.getPosition().getZ()), 2);
+			double asdf = Math.pow(x - toDrawX(s.getPosition().getX()), 2)
+					+ Math.pow(y - toDrawY(s.getPosition().getZ()), 2);
 			if (asdf < d) {
 				d = asdf;
 				ret = s;
 			}
 		}
-		if (d > 100) {
+		if (d > r*r) {
 			ret = null;
 		}
 		return ret;
@@ -99,12 +116,10 @@ public class UniverseCanvas extends Canvas {
 
 	public void redraw() {
 		GraphicsContext gc = getGraphicsContext2D();
-		Double w = getWidth();
-		Double h = getHeight();
 
 		// fill background
 		gc.setFill(BACKGROUND_COLOR);
-		gc.fillRect(0, 0, w, h);
+		gc.fillRect(0, 0, getWidth(), getHeight());
 
 		// draw connections
 		gc.setLineWidth(1);
@@ -124,7 +139,8 @@ public class UniverseCanvas extends Canvas {
 				gc.setStroke(CONNECTION_COLOR);
 				break;
 			}
-			gc.strokeLine(toDrawX(c.getA().getPosition().getX()), toDrawY(c.getA().getPosition().getZ()), toDrawX(c.getB().getPosition().getX()), toDrawY(c.getB().getPosition().getZ()));
+			gc.strokeLine(toDrawX(c.getA().getPosition().getX()), toDrawY(c.getA().getPosition().getZ()),
+					toDrawX(c.getB().getPosition().getX()), toDrawY(c.getB().getPosition().getZ()));
 		}
 
 		// draw systems
@@ -134,20 +150,27 @@ public class UniverseCanvas extends Canvas {
 			Double z = s.getPosition().getZ();
 			gc.fillOval(toDrawX(x) - dotSize / 2, toDrawY(z) - dotSize / 2, dotSize, dotSize);
 		}
-		
+
 		// text dumb thing
 		if (!labelS.isEmpty()) {
 			gc.fillText(labelS, labelX, labelY);
-			System.out.println(labelS);
 		}
 	}
 
-	private Double toDrawX(double mapX) {
-		return (mapX - centerX) * drawScale + getWidth() / 2;
+	private double toDrawX(double mapX) {
+		return ((mapX - universeCenter.getX()) / universeScale - panX) * drawScale + getWidth() / 2;
 	}
 
-	private Double toDrawY(double mapZ) {
-		return (-mapZ - centerY) * drawScale + getHeight() / 2;
+	private double toMapX(double drawX) {
+		return ((drawX - getWidth() / 2) / drawScale + panX) * universeScale + universeCenter.getX();
+	}
+
+	private double toDrawY(double mapZ) {
+		return (-(mapZ - universeCenter.getZ()) / universeScale - panY) * drawScale + getHeight() / 2;
+	}
+
+	private double toMapZ(double drawY) {
+		return universeCenter.getZ() - ((drawY - getHeight() / 2) / drawScale + panY) * universeScale;
 	}
 
 	@Override
@@ -165,7 +188,7 @@ public class UniverseCanvas extends Canvas {
 		return getHeight();
 	}
 
-	public void addSystems(Collection<SolarSystem> systems) {
+	public void addSystems(List<SolarSystem> systems) {
 		Double minx = Double.MAX_VALUE;
 		Double maxx = Double.MIN_VALUE;
 		Double minz = Double.MAX_VALUE;
@@ -181,20 +204,10 @@ public class UniverseCanvas extends Canvas {
 
 		Double spanx = maxx - minx;
 		Double spanz = maxz - minz;
-		Double scale = Math.max(spanx, spanz);
-		Double centerx = minx + spanx / 2;
-		Double centerz = minz + spanz / 2;
+		universeScale = Math.max(spanx, spanz) / 2;
+		universeCenter = new Point3D(minx + spanx / 2, 0, minz + spanz / 2);
 
-		// normalize the positions
-		for (SolarSystem s : systems) {
-			Double x = s.getPosition().getX();
-			Double y = s.getPosition().getY();
-			Double z = s.getPosition().getZ();
-			Double nx = (x - centerx) / (scale / 2);
-			Double ny = y;
-			Double nz = (z - centerz) / (scale / 2);
-			s.setPosition(new Point3D(nx, ny, nz));
-		}
+		searchTree = new KDTree(systems);
 	}
 
 	public void addConnections(Collection<SystemConnection> connections) {

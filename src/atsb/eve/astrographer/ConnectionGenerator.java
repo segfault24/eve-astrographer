@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import atsb.eve.astrographer.model.SolarSystem;
+import atsb.eve.astrographer.model.SolarSystem.SecClass;
 import javafx.geometry.Point3D;
-import model.SolarSystem;
-import model.SolarSystem.SecClass;
 
 public class ConnectionGenerator {
 
@@ -120,10 +120,5 @@ public class ConnectionGenerator {
 		} catch (SQLException e) {
 
 		}
-	}
-
-	public static void main(String[] args) {
-		ConnectionGenerator congen = new ConnectionGenerator();
-		congen.generateConnections();
 	}
 }

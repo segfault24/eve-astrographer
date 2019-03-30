@@ -1,4 +1,4 @@
-package model;
+package atsb.eve.astrographer.model;
 
 import javafx.geometry.Point3D;
 

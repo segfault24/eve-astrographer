@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import atsb.eve.astrographer.model.SolarSystem;
+import atsb.eve.astrographer.model.SystemConnection;
+import atsb.eve.astrographer.model.SystemConnection.GateType;
 import javafx.geometry.Point3D;
-import model.SolarSystem;
-import model.SystemConnection;
-import model.SystemConnection.GateType;
 
 public class SystemLoader {
 
