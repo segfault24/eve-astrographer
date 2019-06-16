@@ -1,6 +1,5 @@
 @echo off
 
 set CLASSPATH="../lib/*"
-set PROPS="../cfg/db.ini"
 
-java -cp %CLASSPATH% -Dconfig=%PROPS% atsb.eve.astrographer.Astrographer $@
+java -cp %CLASSPATH% atsb.eve.astrographer.Astrographer $@

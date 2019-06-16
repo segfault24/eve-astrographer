@@ -1,6 +1,5 @@
 package atsb.eve.astrographer;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.application.Application;
@@ -17,14 +16,10 @@ public class Astrographer extends Application {
 	@Override
 	public void start(Stage primary) throws Exception {
 
-		SystemLoader sl = new SystemLoader();
-		sl.load();
-		logger.log(Level.INFO, "Loaded " + sl.getSystems().size() + " systems");
-		logger.log(Level.INFO, "Loaded " + sl.getConnections().size() + " connections");
+		MapData data = new MapData();
+		data.load();
 
-		canvas = new UniverseCanvas();
-		canvas.addSystems(sl.getSystems());
-		canvas.addConnections(sl.getConnections());
+		canvas = new UniverseCanvas(data);
 
 		StackPane root = new StackPane();
 		Scene scene = new Scene(root);

@@ -14,11 +14,15 @@ public class SolarSystem {
 	private double security;
 	private SecClass sec;
 
+	private boolean selectedPrimary;
+	private boolean selectedSecondary;
+
 	public SolarSystem(String name, int systemId, Point3D position, double security) {
 		this.name = name;
 		this.systemId = systemId;
 		this.position = position;
 		setSecurity(security);
+		this.selectedPrimary = false;
 	}
 
 	public String getName() {
@@ -62,6 +66,30 @@ public class SolarSystem {
 
 	public SecClass getSecClass() {
 		return this.sec;
+	}
+
+	public boolean isSelectedPrimary() {
+		return this.selectedPrimary;
+	}
+
+	public void setSelectedPrimary(boolean selected) {
+		this.selectedPrimary = selected;
+	}
+
+	public void toggleSelectedPrimary() {
+		this.selectedPrimary = !this.selectedPrimary;
+	}
+
+	public boolean isSelectedSecondary() {
+		return this.selectedSecondary;
+	}
+
+	public void setSelectedSecondary(boolean selected) {
+		this.selectedSecondary = selected;
+	}
+
+	public void toggleSelectedSecondary() {
+		this.selectedSecondary = !this.selectedSecondary;
 	}
 
 }

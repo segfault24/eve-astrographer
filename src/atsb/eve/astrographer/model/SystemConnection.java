@@ -3,7 +3,23 @@ package atsb.eve.astrographer.model;
 public class SystemConnection {
 
 	public enum GateType {
-		NORMAL, CONSTELLATION, REGIONAL, JUMPBRIDGE
+		NORMAL, CONSTELLATION, REGIONAL, JUMPBRIDGE, JB_HOSTILE;
+
+		public static GateType valueOf(int i) {
+			switch (i) {
+			case 4:
+				return GateType.JB_HOSTILE;
+			case 3:
+				return GateType.JUMPBRIDGE;
+			case 2:
+				return GateType.REGIONAL;
+			case 1:
+				return GateType.CONSTELLATION;
+			case 0:
+			default:
+				return GateType.NORMAL;
+			}
+		}
 	}
 
 	private SolarSystem sysA;
@@ -27,4 +43,5 @@ public class SystemConnection {
 	public GateType getGateType() {
 		return g;
 	}
+
 }

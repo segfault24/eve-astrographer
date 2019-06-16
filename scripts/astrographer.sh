@@ -3,6 +3,5 @@ cd $(dirname "$0")/..
 base=`pwd`
 
 classpath="$base/lib/*"
-props="$base/cfg/db.ini"
 
-java -cp "$classpath" -Dconfig="$props" atsb.eve.astrographer.Astrographer $@
+java -cp "$classpath" atsb.eve.astrographer.Astrographer $@

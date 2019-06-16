@@ -1,6 +1,7 @@
 package atsb.eve.astrographer.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
@@ -8,8 +9,8 @@ public class KDTree {
 
 	private KDNode root;
 
-	public KDTree(List<SolarSystem> systems) {
-		root = stepX(systems);
+	public KDTree(Collection<SolarSystem> systems) {
+		root = stepX(new ArrayList<SolarSystem>(systems));
 	}
 
 	private KDNode stepX(List<SolarSystem> l) {
