@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import javafx.geometry.Point3D;
 import atsb.eve.astrographer.model.KDTree;
 import atsb.eve.astrographer.model.SolarSystem;
+import atsb.eve.astrographer.model.SolarSystem.CapType;
 import atsb.eve.astrographer.model.SystemConnection;
 import atsb.eve.astrographer.model.SystemConnection.GateType;
 
@@ -40,6 +41,8 @@ public class MapData {
 		loadConnections();
 		loadJumpbridges();
 		logger.info("Loaded " + connections.size() + " connections");
+		loadHighway();
+		logger.info("Loaded capital highway");
 	}
 
 	public Map<Integer, SolarSystem> getSystems() {
@@ -90,6 +93,12 @@ public class MapData {
 
 	public List<SolarSystem> findWithinRange(SolarSystem s, double r) {
 		return findWithinRange(s.getPosition().getX(), s.getPosition().getY(), s.getPosition().getZ(), r);
+	}
+
+	public static double distLY(SolarSystem a, SolarSystem b) {
+		return Math.sqrt(Math.pow(a.getPosition().getX() - b.getPosition().getX(), 2) +
+				Math.pow(a.getPosition().getY() - b.getPosition().getY(), 2) +
+				Math.pow(a.getPosition().getZ() - b.getPosition().getZ(), 2)) / METERS_PER_LY;
 	}
 
 	private void loadSystems() throws IOException {
@@ -189,6 +198,47 @@ public class MapData {
 			}
 		}
 		br.close();
+	}
+
+	private void loadHighway() throws IOException {
+		ArrayList<SolarSystem> hwy = new ArrayList<SolarSystem>();
+		BufferedReader br = new BufferedReader(new FileReader("highway.csv"));
+		String line;
+		while ((line = br.readLine()) != null) {
+			String[] parts = prep(line);
+			if (parts.length != 2) {
+				logger.warning("Failed to parse line in highway.csv: " + line);
+				continue;
+			}
+			SolarSystem s = findSystemByName(parts[0]);
+			if (s == null) {
+				logger.warning("Failed to recognize system in highway.csv: " + line);
+				continue;
+			}
+			if (parts[1].equalsIgnoreCase("1")) {
+				s.setCapType(CapType.SUPER);
+			} else {
+				s.setCapType(CapType.CAP);
+			}
+			hwy.add(s);
+		}
+		br.close();
+
+		// calculate connections
+		for (SolarSystem i : hwy) {
+			for (SolarSystem j : hwy) {
+				if (i == j) {
+					continue;
+				}
+				if (distLY(i, j) < 6) {
+					SystemConnection c = new SystemConnection(i, j, GateType.SUPER_HIGHWAY);
+					connections.add(c);
+				} else if (distLY(i, j) < 7) {
+					SystemConnection c = new SystemConnection(i, j, GateType.HIGHWAY);
+					connections.add(c);
+				}
+			}
+		}
 	}
 
 	// check for null/blank/comment, then break up line by comma and trim everything

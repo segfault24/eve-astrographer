@@ -8,11 +8,16 @@ public class SolarSystem {
 		HISEC, LOWSEC, NULSEC
 	}
 
+	public enum CapType {
+		NONE, CAP, SUPER;
+	}
+
 	private String name;
 	private int systemId;
 	private Point3D position;
 	private double security;
 	private SecClass sec;
+	private CapType capType = CapType.NONE;
 
 	private boolean selectedPrimary;
 	private boolean selectedSecondary;
@@ -66,6 +71,14 @@ public class SolarSystem {
 
 	public SecClass getSecClass() {
 		return this.sec;
+	}
+
+	public CapType getCapType() {
+		return capType;
+	}
+
+	public void setCapType(CapType capType) {
+		this.capType = capType;
 	}
 
 	public boolean isSelectedPrimary() {

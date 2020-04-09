@@ -3,10 +3,14 @@ package atsb.eve.astrographer.model;
 public class SystemConnection {
 
 	public enum GateType {
-		NORMAL, CONSTELLATION, REGIONAL, JUMPBRIDGE, JB_HOSTILE;
+		NORMAL, CONSTELLATION, REGIONAL, JUMPBRIDGE, JB_HOSTILE, HIGHWAY, SUPER_HIGHWAY;
 
 		public static GateType valueOf(int i) {
 			switch (i) {
+			case 6:
+				return GateType.SUPER_HIGHWAY;
+			case 5:
+				return GateType.HIGHWAY;
 			case 4:
 				return GateType.JB_HOSTILE;
 			case 3:
