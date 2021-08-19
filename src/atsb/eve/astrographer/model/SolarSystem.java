@@ -18,9 +18,10 @@ public class SolarSystem {
 	private double security;
 	private SecClass sec;
 	private CapType capType = CapType.NONE;
+	private boolean beacon;
+	private int  selectedCount = 0;
 
 	private boolean selectedPrimary;
-	private boolean selectedSecondary;
 
 	public SolarSystem(String name, int systemId, Point3D position, double security) {
 		this.name = name;
@@ -28,6 +29,7 @@ public class SolarSystem {
 		this.position = position;
 		setSecurity(security);
 		this.selectedPrimary = false;
+		this.beacon = false;
 	}
 
 	public String getName() {
@@ -81,6 +83,14 @@ public class SolarSystem {
 		this.capType = capType;
 	}
 
+	public boolean hasBeacon() {
+		return beacon;
+	}
+
+	public void setBeacon(boolean beacon) {
+		this.beacon = beacon;
+	}
+
 	public boolean isSelectedPrimary() {
 		return this.selectedPrimary;
 	}
@@ -93,16 +103,17 @@ public class SolarSystem {
 		this.selectedPrimary = !this.selectedPrimary;
 	}
 
-	public boolean isSelectedSecondary() {
-		return this.selectedSecondary;
+	public int getSelectedCount() {
+		return selectedCount;
 	}
 
-	public void setSelectedSecondary(boolean selected) {
-		this.selectedSecondary = selected;
+	public void incrementSelected() {
+		selectedCount++;
 	}
 
-	public void toggleSelectedSecondary() {
-		this.selectedSecondary = !this.selectedSecondary;
+	public void decrementSelected() {
+		if (selectedCount > 0)
+			selectedCount--;
 	}
 
 }
