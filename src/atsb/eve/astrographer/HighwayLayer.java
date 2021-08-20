@@ -23,10 +23,10 @@ public class HighwayLayer extends CanvasLayer {
 		gc.setLineWidth(1);
 		for (SystemConnection con : mapData.jumpbridges) {
 			switch (con.getGateType()) {
-			case JUMPBRIDGE:
+			case JB:
 				if (!ctl.showJumpbridges)
 					continue;
-				gc.setStroke(MapStyle.CONNECTION_JUMPBRIDGE);
+				gc.setStroke(MapStyle.CONNECTION_JB);
 				break;
 			case JB_HOSTILE:
 				gc.setStroke(MapStyle.CONNECTION_JB_HOSTILE);
@@ -42,22 +42,20 @@ public class HighwayLayer extends CanvasLayer {
 		gc.setLineWidth(1);
 		for (SystemConnection con : mapData.highway) {
 			switch (con.getGateType()) {
-			case HIGHWAY:
-				if (!ctl.showHighway)
+			case HWY_SUPER_KEEP:
+				if (!ctl.showSuperHighway)
 					continue;
-				gc.setStroke(MapStyle.CONNECTION_HIGHWAY);
+				gc.setStroke(MapStyle.CONNECTION_HWY_SUPER_KEEP);
 				break;
-			case SUPER_HIGHWAY_KEEP:
-				if (!ctl.showHighway && !ctl.showSuperHighway)
+			case HWY_REGULAR:
+				if (!(ctl.showSuperHighway && ctl.showHighway))
 					continue;
-				gc.setStroke(MapStyle.CONNECTION_SUPER_HIGHWAY_KEEP);
+				gc.setStroke(MapStyle.CONNECTION_HWY_REGULAR);
 				break;
-			case SUPER_HIGHWAY_FORT:
-				if (!ctl.showHighway && !ctl.showSuperHighway)
+			case HWY_SUPER_FORT:
+				if (!(ctl.showSuperHighway && ctl.showFortizars))
 					continue;
-				if (!ctl.showFortizars)
-					continue;
-				gc.setStroke(MapStyle.CONNECTION_SUPER_HIGHWAY_FORT);
+				gc.setStroke(MapStyle.CONNECTION_HWY_SUPER_FORT);
 				break;
 			default:
 				continue;

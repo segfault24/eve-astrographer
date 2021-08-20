@@ -118,7 +118,7 @@ public class DataLoader {
 			try {
 				SolarSystem a = d.findSystemByName(parts[1]);
 				SolarSystem b = d.findSystemByName(parts[3]);
-				GateType g = GateType.JUMPBRIDGE;
+				GateType g = GateType.JB;
 				if (a == null || b == null) {
 					logger.warning("Failed to parse line in jumpbridges.txt: " + line);
 					continue;
@@ -201,14 +201,14 @@ public class DataLoader {
 				}
 				if (MapData.distLY(i, j) < 6) {
 					if (i.getCapType() == CapType.SUPER && j.getCapType() == CapType.SUPER) {
-						SystemConnection c = new SystemConnection(i, j, GateType.SUPER_HIGHWAY_KEEP);
+						SystemConnection c = new SystemConnection(i, j, GateType.HWY_SUPER_KEEP);
 						d.highway.add(c);
 					} else {
-						SystemConnection c = new SystemConnection(i, j, GateType.SUPER_HIGHWAY_FORT);
+						SystemConnection c = new SystemConnection(i, j, GateType.HWY_SUPER_FORT);
 						d.highway.add(c);
 					}
 				} else if (MapData.distLY(i, j) < 7) {
-					SystemConnection c = new SystemConnection(i, j, GateType.HIGHWAY);
+					SystemConnection c = new SystemConnection(i, j, GateType.HWY_REGULAR);
 					d.highway.add(c);
 				}
 			}
