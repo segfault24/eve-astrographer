@@ -1,18 +1,26 @@
 package atsb.eve.astrographer;
 
+import java.io.IOException;
+
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -29,6 +37,7 @@ public class Astrographer extends Application {
 		MapData data = DataLoader.load();
 		CanvasController ctl = new CanvasController(data);
 		ctl.showJumpbridges = true;
+		ctl.showSuperHighway = true;
 
 		stage.setTitle("Eve Astrographer");
 		stage.setMinWidth(800);
@@ -36,19 +45,69 @@ public class Astrographer extends Application {
 		stage.setWidth(1024);
 		stage.setHeight(768);
 
+		MenuBar menuBar = new MenuBar();
+		Menu fileMenu = new Menu("File");
+		MenuItem exitItem = new MenuItem("Exit");
+		exitItem.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				Platform.exit();
+			}
+		});
+		MenuItem reloadHighwayItem = new MenuItem("Reload Highway");
+		reloadHighwayItem.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				try {
+					DataLoader.loadHighway(data);
+					ctl.redraw();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		MenuItem reloadJumpbridgesItem = new MenuItem("Reload Jumpbridges");
+		reloadJumpbridgesItem.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				try {
+					DataLoader.loadJumpbridges(data);
+					ctl.redraw();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		MenuItem reloadBeaconsItem = new MenuItem("Reload Beacons");
+		reloadBeaconsItem.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				try {
+					DataLoader.loadBeacons(data);
+					ctl.redraw();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		fileMenu.getItems().addAll(reloadHighwayItem, reloadJumpbridgesItem, reloadBeaconsItem, exitItem);
+		menuBar.getMenus().addAll(fileMenu);
+
 		BorderPane borderPane = new BorderPane();
+		BackgroundLayer bgLayer = new BackgroundLayer(ctl);
 		UniverseLayer universeLayer = new UniverseLayer(ctl, data);
+		HighwayLayer highwayLayer = new HighwayLayer(ctl, data);
 		UILayer uiLayer = new UILayer(ctl, data);
-		Pane canvasPane = new Pane();
-		canvasPane.getChildren().add(universeLayer);
-		canvasPane.getChildren().add(uiLayer);
+		CanvasPane canvasPane = new CanvasPane();
+		canvasPane.add(bgLayer);
+		canvasPane.add(universeLayer);
+		canvasPane.add(highwayLayer);
+		canvasPane.add(uiLayer);
 		uiLayer.toFront();
+		ctl.addLayer(bgLayer);
 		ctl.addLayer(universeLayer);
+		ctl.addLayer(highwayLayer);
 		ctl.addLayer(uiLayer);
-		universeLayer.widthProperty().bind(canvasPane.widthProperty());
-		universeLayer.heightProperty().bind(canvasPane.heightProperty());
-		uiLayer.widthProperty().bind(canvasPane.widthProperty());
-		uiLayer.heightProperty().bind(canvasPane.heightProperty());
 
 		TabPane tabPane = new TabPane();
 		tabPane.setPrefWidth(200);
@@ -57,7 +116,7 @@ public class Astrographer extends Application {
 		VBox controlTabVbox = new VBox();
 		controlTabVbox.setPadding(new Insets(10));
 		CheckBox showJumpbridges = new CheckBox("Jumpbridges");
-		showJumpbridges.setSelected(true);
+		showJumpbridges.setSelected(ctl.showJumpbridges);
 		showJumpbridges.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldVal, Boolean newVal) {
@@ -65,7 +124,8 @@ public class Astrographer extends Application {
 				ctl.redraw();
 			}
 		});
-		CheckBox showFortizars = new CheckBox("Fortizars");
+		CheckBox showFortizars = new CheckBox("+Fortizars");
+		showFortizars.setSelected(ctl.showFortizars);
 		showFortizars.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldVal, Boolean newVal) {
@@ -73,15 +133,8 @@ public class Astrographer extends Application {
 				ctl.redraw();
 			}
 		});
-		CheckBox showKeepstars = new CheckBox("Keepstars");
-		showKeepstars.selectedProperty().addListener(new ChangeListener<Boolean>() {
-			@Override
-			public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldVal, Boolean newVal) {
-				ctl.showKeepstars = newVal;
-				ctl.redraw();
-			}
-		});
-		CheckBox showHighway = new CheckBox("Capital Highway");
+		CheckBox showHighway = new CheckBox("+Capital Jumps");
+		showHighway.setSelected(ctl.showHighway);
 		showHighway.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldVal, Boolean newVal) {
@@ -90,10 +143,13 @@ public class Astrographer extends Application {
 			}
 		});
 		CheckBox showSuperHighway = new CheckBox("Super Highway");
+		showSuperHighway.setSelected(ctl.showSuperHighway);
 		showSuperHighway.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldVal, Boolean newVal) {
 				ctl.showSuperHighway = newVal;
+				showFortizars.setDisable(!newVal);
+				showHighway.setDisable(!newVal);
 				ctl.redraw();
 			}
 		});
@@ -114,13 +170,15 @@ public class Astrographer extends Application {
 			case JF:
 				uiLayer.range = 10;
 				break;
+			default:
+				break;
 			}
 		});
-		controlTabVbox.getChildren().addAll(showJumpbridges, showFortizars, showKeepstars, showHighway,
-				showSuperHighway, rangeSelect);
+		controlTabVbox.getChildren().addAll(showJumpbridges, new Separator(), showSuperHighway, showHighway, showFortizars, new Separator(), rangeSelect);
 		controlTab.setContent(controlTabVbox);
 		tabPane.getTabs().add(controlTab);
 
+		borderPane.setTop(menuBar);
 		borderPane.setLeft(tabPane);
 		borderPane.setCenter(canvasPane);
 

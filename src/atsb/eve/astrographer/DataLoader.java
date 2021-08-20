@@ -17,18 +17,24 @@ public class DataLoader {
 
 	private static Logger logger = Logger.getLogger(DataLoader.class.toString());
 
+	private static String SYSTEMS_FILE = "systems.csv";
+	private static String CONNECTIONS_FILE = "connections.csv";
+	private static String JUMPBRIDGES_FILE = "jumpbridges.txt";
+	private static String BEACONS_FILE = "beacons.txt";
+	private static String HIGHWAY_FILE = "highway.csv";
+
 	public static MapData load() throws IOException {
 		MapData d = new MapData();
-		loadSystems(d, "systems.csv");
-		loadConnections(d, "connections.csv");
-		loadJumpbridges(d, "jumpbridges.txt");
-		loadBeacons(d, "beacons.txt");
-		loadHighway(d, "highway.csv");
+		loadSystems(d);
+		loadConnections(d);
+		loadJumpbridges(d);
+		loadBeacons(d);
+		loadHighway(d);
 		return d;
 	}
 
-	private static void loadSystems(MapData d, String filename) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader(filename));
+	private static void loadSystems(MapData d) throws IOException {
+		BufferedReader br = new BufferedReader(new FileReader(SYSTEMS_FILE));
 		String line;
 		while ((line = br.readLine()) != null) {
 			String[] parts = prep(line, ",");
@@ -73,8 +79,8 @@ public class DataLoader {
 		d.searchTree = new KDTree(d.systems.values());
 	}
 
-	private static void loadConnections(MapData d, String filename) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader(filename));
+	private static void loadConnections(MapData d) throws IOException {
+		BufferedReader br = new BufferedReader(new FileReader(CONNECTIONS_FILE));
 		String line;
 		while ((line = br.readLine()) != null) {
 			String[] parts = prep(line, ",");
@@ -96,8 +102,9 @@ public class DataLoader {
 		br.close();
 	}
 
-	private static void loadJumpbridges(MapData d, String filename) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader(filename));
+	public static void loadJumpbridges(MapData d) throws IOException {
+		d.jumpbridges.clear();
+		BufferedReader br = new BufferedReader(new FileReader(JUMPBRIDGES_FILE));
 		String line;
 		while ((line = br.readLine()) != null) {
 			String[] parts = prep(line, "\\s+");
@@ -117,7 +124,7 @@ public class DataLoader {
 					continue;
 				}
 				SystemConnection con = new SystemConnection(a, b, g);
-				d.connections.add(con);
+				d.jumpbridges.add(con);
 			} catch (NumberFormatException e) {
 				logger.warning("Failed to parse line in jumpbridges.txt: " + line);
 				continue;
@@ -126,8 +133,11 @@ public class DataLoader {
 		br.close();
 	}
 
-	private static void loadBeacons(MapData d, String filename) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader(filename));
+	public static void loadBeacons(MapData d) throws IOException {
+		for (SolarSystem s : d.systems.values()) {
+			s.setBeacon(false);
+		}
+		BufferedReader br = new BufferedReader(new FileReader(BEACONS_FILE));
 		String line;
 		while ((line = br.readLine()) != null) {
 			String[] parts = prep(line, ";");
@@ -153,9 +163,10 @@ public class DataLoader {
 		br.close();
 	}
 
-	private static void loadHighway(MapData d, String filename) throws IOException {
+	public static void loadHighway(MapData d) throws IOException {
+		d.highway.clear();
 		ArrayList<SolarSystem> hwy = new ArrayList<SolarSystem>();
-		BufferedReader br = new BufferedReader(new FileReader("highway.csv"));
+		BufferedReader br = new BufferedReader(new FileReader(HIGHWAY_FILE));
 		String line;
 		while ((line = br.readLine()) != null) {
 			String[] parts = prep(line, ",");
@@ -190,10 +201,10 @@ public class DataLoader {
 				}
 				if (MapData.distLY(i, j) < 6) {
 					SystemConnection c = new SystemConnection(i, j, GateType.SUPER_HIGHWAY);
-					d.connections.add(c);
+					d.highway.add(c);
 				} else if (MapData.distLY(i, j) < 7) {
 					SystemConnection c = new SystemConnection(i, j, GateType.HIGHWAY);
-					d.connections.add(c);
+					d.highway.add(c);
 				}
 			}
 		}

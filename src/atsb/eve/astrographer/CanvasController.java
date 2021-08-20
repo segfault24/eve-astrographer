@@ -1,7 +1,6 @@
 package atsb.eve.astrographer;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 
 import atsb.eve.astrographer.model.SolarSystem;
 import javafx.scene.input.MouseEvent;
@@ -23,24 +22,29 @@ public class CanvasController {
 	protected double height;
 	protected int dotSize = 2;
 
-	protected boolean showJumpbridges = false;
+	protected boolean showJumpbridges = true;
 	protected boolean showFortizars = false;
-	protected boolean showKeepstars = false;
 	protected boolean showHighway = false;
-	protected boolean showSuperHighway = false;
+	protected boolean showSuperHighway = true;
 
-	private List<Redrawable> layers = new ArrayList<Redrawable>();
+	private LinkedList<CanvasLayer> layers = new LinkedList<CanvasLayer>();
 	
 	public CanvasController(MapData mapData) {
 		this.mapData = mapData;
 	}
 
-	public void addLayer(Redrawable c) {
-		layers.add(c);
+	public void addLayer(CanvasLayer l) {
+		for (int i=0; i<layers.size(); i++) {
+			if (l.getLevel() < layers.get(i).getLevel()) {
+				layers.add(i, l);
+				return;
+			}
+		}
+		layers.add(l);
 	}
 
 	public void redraw() {
-		for (Redrawable layer : layers) {
+		for (CanvasLayer layer : layers) {
 			layer.redraw();
 		}
 	}
@@ -52,16 +56,15 @@ public class CanvasController {
 				+ Math.pow(y - toDrawY(s.getPosition().getZ()), 2);
 		if (drawDist <= r * r) {
 			return s;
-		} else {
-			return null;
 		}
+		return null;
 	}
 
-	public double dist(double x1, double y1, double x2, double y2) {
+	public static double dist(double x1, double y1, double x2, double y2) {
 		return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
 	}
 
-	public double dist(MouseEvent a, MouseEvent b) {
+	public static double dist(MouseEvent a, MouseEvent b) {
 		return dist(a.getX(), a.getY(), b.getX(), b.getY());
 	}
 
@@ -85,15 +88,4 @@ public class CanvasController {
 				- ((drawY - height / 2) / drawScale + panY) * mapData.universeScale;
 	}
 
-	private double toMapDist(double drawDist) {
-		return drawDist / drawScale * mapData.universeScale;
-	}
-
-	private double toDrawDist(double mapDist) {
-		return mapDist / mapData.universeScale * drawScale;
-	}
-
-	public static interface Redrawable {
-		public void redraw();
-	}
 }

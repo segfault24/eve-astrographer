@@ -1,13 +1,11 @@
 package atsb.eve.astrographer;
 
-import atsb.eve.astrographer.CanvasController.Redrawable;
 import atsb.eve.astrographer.model.SolarSystem;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 
-public class UILayer extends Canvas implements Redrawable {
+public class UILayer extends CanvasLayer {
 
 	private CanvasController ctl;
 	private MouseEvent pressStart;
@@ -44,7 +42,7 @@ public class UILayer extends Canvas implements Redrawable {
 		});
 		setOnMouseReleased(e -> {
 			if (e.getButton() == MouseButton.PRIMARY) {
-				if (ctl.dist(pressStart, e) < 15) {
+				if (CanvasController.dist(pressStart, e) < 15) {
 					SolarSystem s = ctl.searchNearest(e.getX(), e.getY(), 15);
 					if (s != null) {
 						s.toggleSelectedPrimary();
@@ -95,6 +93,7 @@ public class UILayer extends Canvas implements Redrawable {
 		});
 	}
 
+	@Override
 	public void redraw() {
 		GraphicsContext gc = getGraphicsContext2D();
 		gc.clearRect(0, 0, ctl.width, ctl.height);
@@ -105,5 +104,10 @@ public class UILayer extends Canvas implements Redrawable {
 			gc.setFill(MapStyle.SYSTEM_LABEL_HOVER);
 			gc.fillText(labelS, labelX, labelY);
 		}
+	}
+
+	@Override
+	public int getLevel() {
+		return 100;
 	}
 }

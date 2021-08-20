@@ -15,6 +15,8 @@ public class MapData {
 
 	HashMap<Integer, SolarSystem> systems = new HashMap<Integer, SolarSystem>();
 	List<SystemConnection> connections = new ArrayList<SystemConnection>();
+	List<SystemConnection> jumpbridges = new ArrayList<SystemConnection>();
+	List<SystemConnection> highway = new ArrayList<SystemConnection>();
 	KDTree searchTree;
 	Point3D universeCenter;
 	double universeScale = 1;

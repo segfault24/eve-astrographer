@@ -1,13 +1,10 @@
 package atsb.eve.astrographer;
 
-import atsb.eve.astrographer.CanvasController.Redrawable;
 import atsb.eve.astrographer.model.SolarSystem;
 import atsb.eve.astrographer.model.SystemConnection;
-import atsb.eve.astrographer.model.SolarSystem.CapType;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
-public class UniverseLayer extends Canvas implements Redrawable {
+public class UniverseLayer extends CanvasLayer {
 
 	private CanvasController ctl;
 	private MapData mapData;
@@ -17,36 +14,16 @@ public class UniverseLayer extends Canvas implements Redrawable {
 		this.mapData = mapData;
 	}
 
+	@Override
 	public void redraw() {
 		GraphicsContext gc = getGraphicsContext2D();
+		gc.clearRect(0, 0, ctl.width, ctl.height);
 		gc.setFont(MapStyle.LABEL_FONT);
-
-		// fill background
-		gc.setFill(MapStyle.BACKGROUND);
-		gc.fillRect(0, 0, ctl.width, ctl.height);
 
 		// draw connections
 		gc.setLineWidth(1);
 		for (SystemConnection con : mapData.connections) {
 			switch (con.getGateType()) {
-			case HIGHWAY:
-				if (!ctl.showHighway)
-					continue;
-				gc.setStroke(MapStyle.CONNECTION_HIGHWAY);
-				break;
-			case SUPER_HIGHWAY:
-				if (!ctl.showHighway && !ctl.showSuperHighway)
-					continue;
-				gc.setStroke(MapStyle.CONNECTION_SUPER_HIGHWAY);
-				break;
-			case JUMPBRIDGE:
-				if (!ctl.showJumpbridges)
-					continue;
-				gc.setStroke(MapStyle.CONNECTION_JUMPBRIDGE);
-				break;
-			case JB_HOSTILE:
-				gc.setStroke(MapStyle.CONNECTION_JB_HOSTILE);
-				break;
 			case REGIONAL:
 				gc.setStroke(MapStyle.CONNECTION_REGIONAL);
 				break;
@@ -54,9 +31,10 @@ public class UniverseLayer extends Canvas implements Redrawable {
 				gc.setStroke(MapStyle.CONNECTION_CONSTELLATION);
 				break;
 			case NORMAL:
-			default:
 				gc.setStroke(MapStyle.CONNECTION_NORMAL);
 				break;
+			default:
+				continue;
 			}
 			gc.strokeLine(ctl.toDrawX(con.getA().getPosition().getX()), ctl.toDrawY(con.getA().getPosition().getZ()),
 					ctl.toDrawX(con.getB().getPosition().getX()), ctl.toDrawY(con.getB().getPosition().getZ()));
@@ -116,6 +94,11 @@ public class UniverseLayer extends Canvas implements Redrawable {
 	@Override
 	public double prefHeight(double width) {
 		return getHeight();
+	}
+
+	@Override
+	public int getLevel() {
+		return 0;
 	}
 
 }
