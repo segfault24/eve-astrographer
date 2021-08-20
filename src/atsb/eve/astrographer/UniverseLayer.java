@@ -1,7 +1,5 @@
 package atsb.eve.astrographer;
 
-import atsb.eve.astrographer.model.SolarSystem;
-import atsb.eve.astrographer.model.SystemConnection;
 import javafx.scene.canvas.GraphicsContext;
 
 public class UniverseLayer extends CanvasLayer {
@@ -59,25 +57,25 @@ public class UniverseLayer extends CanvasLayer {
 			}
 
 			// draw the selection ring
-			if (s.isSelectedPrimary()) {
+			if (ctl.getSelectionMap().isSelected(s)) {
 				gc.setStroke(MapStyle.SYSTEM_SELECTED);
 				gc.strokeOval(x - dot - 2, y - dot - 2, 2 * dot + 4, 2 * dot + 4);
-			} else if (s.getSelectedCount() == 1) {
+			} else if (ctl.getSelectionMap().getNumBacklinks(s) == 1) {
 				gc.setStroke(MapStyle.SYSTEM_SELECTED_1);
 				gc.strokeOval(x - dot - 2, y - dot - 2, 2 * dot + 4, 2 * dot + 4);
-			} else if (s.getSelectedCount() == 2) {
+			} else if (ctl.getSelectionMap().getNumBacklinks(s) == 2) {
 				gc.setStroke(MapStyle.SYSTEM_SELECTED_2);
 				gc.strokeOval(x - dot - 2, y - dot - 2, 2 * dot + 4, 2 * dot + 4);
-			} else if (s.getSelectedCount() >= 3) {
+			} else if (ctl.getSelectionMap().getNumBacklinks(s) >= 3) {
 				gc.setStroke(MapStyle.SYSTEM_SELECTED_3);
 				gc.strokeOval(x - dot - 2, y - dot - 2, 2 * dot + 4, 2 * dot + 4);
 			}
 
 			// draw the text
-			if (s.isSelectedPrimary()) {
+			if (ctl.getSelectionMap().isSelected(s)) {
 				gc.setFill(MapStyle.SYSTEM_LABEL_SELECTED);
 				gc.fillText(s.getName(), x + 10, y + 2);
-			} else if (ctl.zoom >= 70) {
+			} else if (ctl.zoom >= 70 && ctl.getSelectionMap().getNumBacklinks(s) >= 1) {
 				gc.setFill(MapStyle.SYSTEM_LABEL_HOVER);
 				gc.fillText(s.getName(), x + 10, y + 2);
 			}

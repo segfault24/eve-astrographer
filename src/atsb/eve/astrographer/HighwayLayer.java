@@ -1,6 +1,5 @@
 package atsb.eve.astrographer;
 
-import atsb.eve.astrographer.model.SystemConnection;
 import javafx.scene.canvas.GraphicsContext;
 
 public class HighwayLayer extends CanvasLayer {

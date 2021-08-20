@@ -1,4 +1,4 @@
-package atsb.eve.astrographer.model;
+package atsb.eve.astrographer;
 
 public class SystemConnection {
 

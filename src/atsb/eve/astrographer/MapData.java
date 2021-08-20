@@ -5,9 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import javafx.geometry.Point3D;
-import atsb.eve.astrographer.model.KDTree;
-import atsb.eve.astrographer.model.SolarSystem;
-import atsb.eve.astrographer.model.SystemConnection;
 
 public class MapData {
 

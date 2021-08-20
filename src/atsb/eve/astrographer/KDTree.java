@@ -1,4 +1,4 @@
-package atsb.eve.astrographer.model;
+package atsb.eve.astrographer;
 
 import java.util.ArrayList;
 import java.util.Collection;

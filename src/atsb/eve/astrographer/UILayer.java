@@ -1,6 +1,5 @@
 package atsb.eve.astrographer;
 
-import atsb.eve.astrographer.model.SolarSystem;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -66,16 +65,12 @@ public class UILayer extends CanvasLayer {
 				if (CanvasController.dist(pressStart, e) < 15) {
 					SolarSystem s = ctl.searchNearest(e.getX(), e.getY(), 15);
 					if (s != null) {
-						s.toggleSelectedPrimary();
-						//////
-						for (SolarSystem j : mapData.findWithinRange(s, range * MapData.METERS_PER_LY)) {
-							if (s.isSelectedPrimary()) {
-								j.incrementSelected();
-							} else {
-								j.decrementSelected();
-							}
+						if (ctl.getSelectionMap().isSelected(s)) {
+							ctl.getSelectionMap().removeAll(s);
+						} else {
+							ctl.getSelectionMap().setSelected(s);
+							ctl.getSelectionMap().addAll(s, mapData.findWithinRange(s, range * MapData.METERS_PER_LY));
 						}
-						//////
 					}
 				}
 			}

@@ -6,11 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import atsb.eve.astrographer.model.KDTree;
-import atsb.eve.astrographer.model.SolarSystem;
-import atsb.eve.astrographer.model.SystemConnection;
-import atsb.eve.astrographer.model.SolarSystem.CapType;
-import atsb.eve.astrographer.model.SystemConnection.GateType;
+import atsb.eve.astrographer.SolarSystem.CapType;
+import atsb.eve.astrographer.SystemConnection.GateType;
 import javafx.geometry.Point3D;
 
 public class DataLoader {

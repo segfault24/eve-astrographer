@@ -2,7 +2,6 @@ package atsb.eve.astrographer;
 
 import java.util.LinkedList;
 
-import atsb.eve.astrographer.model.SolarSystem;
 import javafx.scene.input.MouseEvent;
 
 public class CanvasController {
@@ -23,11 +22,12 @@ public class CanvasController {
 	protected double dotSize = 1;
 
 	protected boolean showJumpbridges = true;
-	protected boolean showFortizars = false;
-	protected boolean showHighway = false;
 	protected boolean showSuperHighway = true;
+	protected boolean showHighway = false;
+	protected boolean showFortizars = false;
 
 	private LinkedList<CanvasLayer> layers = new LinkedList<CanvasLayer>();
+	private SelectionMap selectionMap = new SelectionMap();
 	
 	public CanvasController(MapData mapData) {
 		this.mapData = mapData;
@@ -47,6 +47,10 @@ public class CanvasController {
 		for (CanvasLayer layer : layers) {
 			layer.redraw();
 		}
+	}
+
+	public SelectionMap getSelectionMap() {
+		return selectionMap;
 	}
 
 	// find the nearest system within r pixels of the given x,y onscreen
