@@ -15,14 +15,16 @@ public class MapStyle {
 
 	public static final Color SYSTEM_SELECTED_1 = Color.MEDIUMPURPLE;
 	public static final Color SYSTEM_SELECTED_2 = Color.PURPLE;
+	public static final Color SYSTEM_SELECTED_3 = Color.HOTPINK;
 
-	public static final Color CONNECTION_NORMAL = Color.BLUE;
-	public static final Color CONNECTION_CONSTELLATION = Color.DARKRED;
-	public static final Color CONNECTION_REGIONAL = Color.PURPLE;
+	public static final Color CONNECTION_NORMAL = Color.rgb(0, 0, 126);
+	public static final Color CONNECTION_CONSTELLATION = Color.rgb(65, 0, 0);
+	public static final Color CONNECTION_REGIONAL = Color.rgb(65, 0, 65);
 	public static final Color CONNECTION_JUMPBRIDGE = Color.GREEN;
-	public static final Color CONNECTION_JB_HOSTILE = Color.RED;
+	public static final Color CONNECTION_JB_HOSTILE = Color.DARKRED;
+	public static final Color CONNECTION_SUPER_HIGHWAY_KEEP = Color.LIGHTGREEN;
+	public static final Color CONNECTION_SUPER_HIGHWAY_FORT = Color.YELLOW;
 	public static final Color CONNECTION_HIGHWAY = Color.DARKORANGE;
-	public static final Color CONNECTION_SUPER_HIGHWAY = Color.YELLOW;
 
 	public static final Font LABEL_FONT = new Font("courier new", 11.5);
 }

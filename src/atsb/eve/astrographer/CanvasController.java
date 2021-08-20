@@ -20,7 +20,7 @@ public class CanvasController {
 
 	protected double width;
 	protected double height;
-	protected int dotSize = 2;
+	protected double dotSize = 1;
 
 	protected boolean showJumpbridges = true;
 	protected boolean showFortizars = false;

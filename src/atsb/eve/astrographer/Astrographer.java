@@ -38,6 +38,8 @@ public class Astrographer extends Application {
 		CanvasController ctl = new CanvasController(data);
 		ctl.showJumpbridges = true;
 		ctl.showSuperHighway = true;
+		ctl.showFortizars = true;
+		ctl.showHighway = true;
 
 		stage.setTitle("Eve Astrographer");
 		stage.setMinWidth(800);

@@ -29,13 +29,13 @@ public class UILayer extends CanvasLayer {
 		});
 
 		setOnScroll(e -> {
-			if (ctl.zoom == 100 && e.getDeltaY() > 0) {
+			if (ctl.zoom == 100 && e.getDeltaY() < 0) {
 				// dont pan on zoom if at max zoom
-			} else if (ctl.zoom == 0 && e.getDeltaY() < 0) {
+			} else if (ctl.zoom == 0 && e.getDeltaY() > 0) {
 				// dont pan on zoom if at min zoom
 			} else {
 				// zoom in towards the mouse cursor
-				if (e.getDeltaY() > 0) {
+				if (e.getDeltaY() < 0) {
 					ctl.panX += (e.getX() - ctl.width / 2) / ctl.drawScale / 6;
 					ctl.panY += (e.getY() - ctl.height / 2) / ctl.drawScale / 6;
 				} else {
@@ -48,12 +48,13 @@ public class UILayer extends CanvasLayer {
 				ctl.panY = Math.min(ctl.panY, 1);
 			}
 
-			ctl.zoom += e.getDeltaY() / 8;
+			ctl.zoom -= e.getDeltaY() / 8;
 			ctl.zoom = Math.max(ctl.zoom, CanvasController.ZOOM_MIN);
 			ctl.zoom = Math.min(ctl.zoom, CanvasController.ZOOM_MAX);
 			ctl.drawScale = 350 * Math.pow(Math.E, 0.0353 * ctl.zoom);
-			ctl.dotSize = (int) ctl.zoom / 20 + 2;
+			ctl.dotSize = ctl.zoom / 30 + 1;
 
+			relabel(e.getX(), e.getY());
 			ctl.redraw();
 		});
 		setOnMousePressed(e -> {
@@ -101,16 +102,20 @@ public class UILayer extends CanvasLayer {
 			ctl.redraw();
 		});
 		setOnMouseMoved(e -> {
-			SolarSystem s = ctl.searchNearest(e.getX(), e.getY(), 10);
-			if (s != null) {
-				labelS = s.getName();
-				labelX = ctl.toDrawX(s.getPosition().getX()) + 10;
-				labelY = ctl.toDrawY(s.getPosition().getZ()) + 2;
-			} else {
-				labelS = "";
-			}
+			relabel(e.getX(), e.getY());
 			redraw();
 		});
+	}
+
+	private void relabel(double x, double y) {
+		SolarSystem s = ctl.searchNearest(x, y, 10);
+		if (s != null) {
+			labelS = s.getName();
+			labelX = ctl.toDrawX(s.getPosition().getX());
+			labelY = ctl.toDrawY(s.getPosition().getZ());
+		} else {
+			labelS = "";
+		}
 	}
 
 	@Override
@@ -122,7 +127,9 @@ public class UILayer extends CanvasLayer {
 		// text dumb thing
 		if (!labelS.isEmpty()) {
 			gc.setFill(MapStyle.SYSTEM_LABEL_HOVER);
-			gc.fillText(labelS, labelX, labelY);
+			gc.fillText(labelS, labelX + 10, labelY + 2);
+			gc.setStroke(MapStyle.SYSTEM_LABEL_HOVER);
+			gc.strokeOval(labelX - ctl.dotSize - 2, labelY - ctl.dotSize - 2, 2 * ctl.dotSize + 4, 2 * ctl.dotSize + 4);
 		}
 	}
 

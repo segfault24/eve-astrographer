@@ -200,8 +200,13 @@ public class DataLoader {
 					continue;
 				}
 				if (MapData.distLY(i, j) < 6) {
-					SystemConnection c = new SystemConnection(i, j, GateType.SUPER_HIGHWAY);
-					d.highway.add(c);
+					if (i.getCapType() == CapType.SUPER && j.getCapType() == CapType.SUPER) {
+						SystemConnection c = new SystemConnection(i, j, GateType.SUPER_HIGHWAY_KEEP);
+						d.highway.add(c);
+					} else {
+						SystemConnection c = new SystemConnection(i, j, GateType.SUPER_HIGHWAY_FORT);
+						d.highway.add(c);
+					}
 				} else if (MapData.distLY(i, j) < 7) {
 					SystemConnection c = new SystemConnection(i, j, GateType.HIGHWAY);
 					d.highway.add(c);

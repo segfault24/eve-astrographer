@@ -49,7 +49,7 @@ public class UniverseLayer extends CanvasLayer {
 			}
 
 			// draw the dot
-			int dot = ctl.dotSize;
+			double dot = ctl.dotSize;
 			if (s.hasBeacon()) {
 				gc.setFill(MapStyle.SYSTEM_BEACON);
 				gc.fillOval(x - dot / 2, y - dot / 2, dot, dot);
@@ -65,8 +65,11 @@ public class UniverseLayer extends CanvasLayer {
 			} else if (s.getSelectedCount() == 1) {
 				gc.setStroke(MapStyle.SYSTEM_SELECTED_1);
 				gc.strokeOval(x - dot - 2, y - dot - 2, 2 * dot + 4, 2 * dot + 4);
-			} else if (s.getSelectedCount() >= 2) {
+			} else if (s.getSelectedCount() == 2) {
 				gc.setStroke(MapStyle.SYSTEM_SELECTED_2);
+				gc.strokeOval(x - dot - 2, y - dot - 2, 2 * dot + 4, 2 * dot + 4);
+			} else if (s.getSelectedCount() >= 3) {
+				gc.setStroke(MapStyle.SYSTEM_SELECTED_3);
 				gc.strokeOval(x - dot - 2, y - dot - 2, 2 * dot + 4, 2 * dot + 4);
 			}
 
