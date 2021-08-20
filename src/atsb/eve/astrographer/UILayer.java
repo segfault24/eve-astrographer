@@ -29,11 +29,31 @@ public class UILayer extends CanvasLayer {
 		});
 
 		setOnScroll(e -> {
+			if (ctl.zoom == 100 && e.getDeltaY() > 0) {
+				// dont pan on zoom if at max zoom
+			} else if (ctl.zoom == 0 && e.getDeltaY() < 0) {
+				// dont pan on zoom if at min zoom
+			} else {
+				// zoom in towards the mouse cursor
+				if (e.getDeltaY() > 0) {
+					ctl.panX += (e.getX() - ctl.width / 2) / ctl.drawScale / 6;
+					ctl.panY += (e.getY() - ctl.height / 2) / ctl.drawScale / 6;
+				} else {
+					ctl.panX -= (e.getX() - ctl.width / 2) / ctl.drawScale / 6;
+					ctl.panY -= (e.getY() - ctl.height / 2) / ctl.drawScale / 6;
+				}
+				ctl.panX = Math.max(ctl.panX, -1);
+				ctl.panX = Math.min(ctl.panX, 1);
+				ctl.panY = Math.max(ctl.panY, -1);
+				ctl.panY = Math.min(ctl.panY, 1);
+			}
+
 			ctl.zoom += e.getDeltaY() / 8;
 			ctl.zoom = Math.max(ctl.zoom, CanvasController.ZOOM_MIN);
 			ctl.zoom = Math.min(ctl.zoom, CanvasController.ZOOM_MAX);
 			ctl.drawScale = 350 * Math.pow(Math.E, 0.0353 * ctl.zoom);
 			ctl.dotSize = (int) ctl.zoom / 20 + 2;
+
 			ctl.redraw();
 		});
 		setOnMousePressed(e -> {
@@ -89,7 +109,7 @@ public class UILayer extends CanvasLayer {
 			} else {
 				labelS = "";
 			}
-			ctl.redraw();
+			redraw();
 		});
 	}
 
@@ -108,6 +128,7 @@ public class UILayer extends CanvasLayer {
 
 	@Override
 	public int getLevel() {
-		return 100;
+		return Integer.MAX_VALUE;
 	}
+
 }

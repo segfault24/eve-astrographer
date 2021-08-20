@@ -211,11 +211,11 @@ public class DataLoader {
 	}
 
 	// check for null/blank/comment, then break up line by specified delimiter and trim everything
-	private static String[] prep(String line, String split) {
-		if (line == null) {
+	private static String[] prep(String _line, String split) {
+		if (_line == null) {
 			return new String[0];
 		}
-		line = line.trim();
+		String line = _line.trim();
 		if (line.isEmpty() || line.startsWith("#")) {
 			return new String[0];
 		}
