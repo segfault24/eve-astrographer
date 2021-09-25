@@ -1,11 +1,11 @@
-package atsb.eve.astrographer;
+package dev.pagefault.eve.astrographer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import atsb.eve.astrographer.SolarSystem.CapType;
-import atsb.eve.astrographer.SystemConnection.GateType;
+import dev.pagefault.eve.astrographer.SolarSystem.CapType;
+import dev.pagefault.eve.astrographer.SystemConnection.GateType;
 import javafx.geometry.Point3D;
 
 public class MapData {

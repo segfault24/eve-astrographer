@@ -1,8 +1,8 @@
-package atsb.eve.astrographer;
+package dev.pagefault.eve.astrographer;
 
 import java.io.IOException;
 
-import atsb.eve.astrographer.SolarSystem.CapType;
+import dev.pagefault.eve.astrographer.SolarSystem.CapType;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;

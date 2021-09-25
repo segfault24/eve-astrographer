@@ -1,4 +1,4 @@
-package atsb.eve.astrographer;
+package dev.pagefault.eve.astrographer;
 
 import java.io.Closeable;
 import java.io.IOException;

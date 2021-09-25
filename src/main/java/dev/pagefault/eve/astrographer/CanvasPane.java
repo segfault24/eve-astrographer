@@ -1,4 +1,4 @@
-package atsb.eve.astrographer;
+package dev.pagefault.eve.astrographer;
 
 import javafx.scene.layout.Pane;
 

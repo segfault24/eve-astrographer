@@ -1,4 +1,4 @@
-package atsb.eve.astrographer;
+package dev.pagefault.eve.astrographer;
 
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;

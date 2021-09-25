@@ -1,12 +1,12 @@
-package atsb.eve.astrographer;
+package dev.pagefault.eve.astrographer;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import atsb.eve.astrographer.SolarSystem.CapType;
-import atsb.eve.astrographer.SystemConnection.GateType;
+import dev.pagefault.eve.astrographer.SolarSystem.CapType;
+import dev.pagefault.eve.astrographer.SystemConnection.GateType;
 import javafx.geometry.Point3D;
 
 public class DataLoader {
