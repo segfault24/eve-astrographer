@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import atsb.eve.astrographer.SolarSystem.CapType;
+import atsb.eve.astrographer.SystemConnection.GateType;
 import javafx.geometry.Point3D;
 
 public class MapData {
@@ -13,6 +15,7 @@ public class MapData {
 	HashMap<Integer, SolarSystem> systems = new HashMap<Integer, SolarSystem>();
 	List<SystemConnection> connections = new ArrayList<SystemConnection>();
 	List<SystemConnection> jumpbridges = new ArrayList<SystemConnection>();
+	List<SolarSystem> highwaySystems = new ArrayList<SolarSystem>();
 	List<SystemConnection> highway = new ArrayList<SystemConnection>();
 	KDTree searchTree;
 	Point3D universeCenter;
@@ -56,6 +59,29 @@ public class MapData {
 		return Math.sqrt(Math.pow(a.getPosition().getX() - b.getPosition().getX(), 2)
 				+ Math.pow(a.getPosition().getY() - b.getPosition().getY(), 2)
 				+ Math.pow(a.getPosition().getZ() - b.getPosition().getZ(), 2)) / METERS_PER_LY;
+	}
+
+	public void recalculateHighwayConnections() {
+		highway.clear();
+		for (SolarSystem i : highwaySystems) {
+			for (SolarSystem j : highwaySystems) {
+				if (i == j) {
+					continue;
+				}
+				if (MapData.distLY(i, j) < 6) {
+					if (i.getCapType() == CapType.SUPER && j.getCapType() == CapType.SUPER) {
+						SystemConnection c = new SystemConnection(i, j, GateType.HWY_SUPER_KEEP);
+						highway.add(c);
+					} else {
+						SystemConnection c = new SystemConnection(i, j, GateType.HWY_SUPER_FORT);
+						highway.add(c);
+					}
+				} else if (MapData.distLY(i, j) < 7) {
+					SystemConnection c = new SystemConnection(i, j, GateType.HWY_REGULAR);
+					highway.add(c);
+				}
+			}
+		}
 	}
 
 }

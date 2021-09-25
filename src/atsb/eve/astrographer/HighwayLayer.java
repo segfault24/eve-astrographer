@@ -46,15 +46,15 @@ public class HighwayLayer extends CanvasLayer {
 					continue;
 				gc.setStroke(MapStyle.CONNECTION_HWY_SUPER_KEEP);
 				break;
-			case HWY_REGULAR:
-				if (!(ctl.showSuperHighway && ctl.showHighway))
-					continue;
-				gc.setStroke(MapStyle.CONNECTION_HWY_REGULAR);
-				break;
 			case HWY_SUPER_FORT:
 				if (!(ctl.showSuperHighway && ctl.showFortizars))
 					continue;
 				gc.setStroke(MapStyle.CONNECTION_HWY_SUPER_FORT);
+				break;
+			case HWY_REGULAR:
+				if (!(ctl.showSuperHighway && ctl.showFortizars && ctl.showHighway))
+					continue;
+				gc.setStroke(MapStyle.CONNECTION_HWY_REGULAR);
 				break;
 			default:
 				continue;

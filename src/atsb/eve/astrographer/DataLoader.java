@@ -3,7 +3,6 @@ package atsb.eve.astrographer;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import atsb.eve.astrographer.SolarSystem.CapType;
@@ -14,11 +13,11 @@ public class DataLoader {
 
 	private static Logger logger = Logger.getLogger(DataLoader.class.toString());
 
-	private static String SYSTEMS_FILE = "systems.csv";
-	private static String CONNECTIONS_FILE = "connections.csv";
-	private static String JUMPBRIDGES_FILE = "jumpbridges.txt";
-	private static String BEACONS_FILE = "beacons.txt";
-	private static String HIGHWAY_FILE = "highway.csv";
+	private static String SYSTEMS_FILE = "cfg/systems.csv";
+	private static String CONNECTIONS_FILE = "cfg/connections.csv";
+	private static String JUMPBRIDGES_FILE = "cfg/jumpbridges.txt";
+	private static String BEACONS_FILE = "cfg/beacons.txt";
+	private static String HIGHWAY_FILE = "cfg/highway.csv";
 
 	public static MapData load() throws IOException {
 		MapData d = new MapData();
@@ -161,8 +160,10 @@ public class DataLoader {
 	}
 
 	public static void loadHighway(MapData d) throws IOException {
-		d.highway.clear();
-		ArrayList<SolarSystem> hwy = new ArrayList<SolarSystem>();
+		for (SolarSystem s : d.highwaySystems) {
+			s.setCapType(CapType.NONE);
+		}
+		d.highwaySystems.clear();
 		BufferedReader br = new BufferedReader(new FileReader(HIGHWAY_FILE));
 		String line;
 		while ((line = br.readLine()) != null) {
@@ -184,32 +185,12 @@ public class DataLoader {
 			} else if (parts[1].equalsIgnoreCase("0") && s.getCapType() != CapType.SUPER) {
 				s.setCapType(CapType.CAP);
 			}
-			if (!hwy.contains(s)) {
-				hwy.add(s);
+			if (!d.highwaySystems.contains(s)) {
+				d.highwaySystems.add(s);
 			}
 		}
 		br.close();
-
-		// calculate connections
-		for (SolarSystem i : hwy) {
-			for (SolarSystem j : hwy) {
-				if (i == j) {
-					continue;
-				}
-				if (MapData.distLY(i, j) < 6) {
-					if (i.getCapType() == CapType.SUPER && j.getCapType() == CapType.SUPER) {
-						SystemConnection c = new SystemConnection(i, j, GateType.HWY_SUPER_KEEP);
-						d.highway.add(c);
-					} else {
-						SystemConnection c = new SystemConnection(i, j, GateType.HWY_SUPER_FORT);
-						d.highway.add(c);
-					}
-				} else if (MapData.distLY(i, j) < 7) {
-					SystemConnection c = new SystemConnection(i, j, GateType.HWY_REGULAR);
-					d.highway.add(c);
-				}
-			}
-		}
+		d.recalculateHighwayConnections();
 	}
 
 	// check for null/blank/comment, then break up line by specified delimiter and trim everything

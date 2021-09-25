@@ -1,0 +1,17 @@
+####
+# entries should be comma separated: system,supers
+#  where system=the system name (case insensitive)
+#        supers=0 means no super docking
+#        supers=1 means super docking (keepstars)
+####
+
+0sht-A,1
+c0o6-k,1
+a24l-v,1
+ivp-ka,1
+e1w-tb,1
+m53-1v,1
+k85y-6,1
+xupk-z,1
+neu-ud,1
+t0dt-t,1

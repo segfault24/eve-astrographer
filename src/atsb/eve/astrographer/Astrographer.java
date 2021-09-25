@@ -2,6 +2,7 @@ package atsb.eve.astrographer;
 
 import java.io.IOException;
 
+import atsb.eve.astrographer.SolarSystem.CapType;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -14,12 +15,14 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -31,11 +34,14 @@ public class Astrographer extends Application {
 	private final String BLOPS = "Blops 8ly";
 	private final String JF = "JF 10ly";
 
+	private MapData data;
+	private CanvasController ctl;
+
 	@Override
 	public void start(Stage stage) throws Exception {
 
-		MapData data = DataLoader.load();
-		CanvasController ctl = new CanvasController(data);
+		data = DataLoader.load();
+		ctl = new CanvasController(data);
 		ctl.showJumpbridges = true;
 		ctl.showSuperHighway = true;
 		ctl.showFortizars = true;
@@ -105,11 +111,15 @@ public class Astrographer extends Application {
 		canvasPane.add(universeLayer);
 		canvasPane.add(highwayLayer);
 		canvasPane.add(uiLayer);
-		uiLayer.toFront();
 		ctl.addLayer(bgLayer);
 		ctl.addLayer(universeLayer);
 		ctl.addLayer(highwayLayer);
 		ctl.addLayer(uiLayer);
+
+		uiLayer.toFront();
+		uiLayer.setOnContextMenuRequested(e -> {
+			buildContextMenu(e).show(uiLayer, e.getScreenX(), e.getScreenY());
+		});
 
 		TabPane tabPane = new TabPane();
 		tabPane.setPrefWidth(200);
@@ -176,7 +186,8 @@ public class Astrographer extends Application {
 				break;
 			}
 		});
-		controlTabVbox.getChildren().addAll(showJumpbridges, new Separator(), showSuperHighway, showHighway, showFortizars, new Separator(), rangeSelect);
+		controlTabVbox.getChildren().addAll(showJumpbridges, new Separator(), showSuperHighway, showHighway,
+				showFortizars, new Separator(), rangeSelect);
 		controlTab.setContent(controlTabVbox);
 		tabPane.getTabs().add(controlTab);
 
@@ -187,6 +198,45 @@ public class Astrographer extends Application {
 		stage.setScene(new Scene(borderPane));
 		stage.show();
 		ctl.redraw();
+	}
+
+	private ContextMenu buildContextMenu(ContextMenuEvent e) {
+		ContextMenu menu = new ContextMenu();
+
+		SolarSystem s = ctl.searchNearest(e.getX(), e.getY(), 15);
+		if (s != null) {
+			if (s.getCapType() == CapType.NONE) {
+				MenuItem addFortToHighway = new MenuItem("Add Fortizar");
+				addFortToHighway.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent arg0) {
+						s.setCapType(CapType.CAP);
+						data.highwaySystems.add(s);
+						data.recalculateHighwayConnections();
+						ctl.redraw();
+					}
+				});
+				menu.getItems().add(addFortToHighway);
+				MenuItem addKeepToHighway = new MenuItem("Add Keepstar");
+				addKeepToHighway.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent arg0) {
+						s.setCapType(CapType.SUPER);
+						data.highwaySystems.add(s);
+						data.recalculateHighwayConnections();
+						ctl.redraw();
+					}
+				});
+				menu.getItems().add(addKeepToHighway);
+			}
+		}
+
+		if (!menu.getItems().isEmpty()) {
+			MenuItem cancel = new MenuItem("Cancel");
+			menu.getItems().add(cancel);
+		}
+
+		return menu;
 	}
 
 	public static void main(String[] args) {
